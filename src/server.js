@@ -1,25 +1,13 @@
 require("dotenv").config();
 
-const express =
-  require("express");
+const express = require("express");
+const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
+const jwt = require("jsonwebtoken");
 
-const cors =
-  require("cors");
-
-const multer =
-  require("multer");
-
-const path =
-  require("path");
-
-const jwt =
-  require("jsonwebtoken");
-
-const pool =
-  require("../config/db");
-
-const auth =
-  require("./middleware/auth");
+const pool = require("../config/db");
+const auth = require("./middleware/auth");
 
 const app = express();
 
@@ -40,48 +28,32 @@ app.use(
    MULTER
 ========================= */
 
-const storage =
-  multer.diskStorage({
+const storage = multer.diskStorage({
 
-    destination: (
-      req,
-      file,
-      cb
-    ) => {
+  destination: (req, file, cb) => {
 
-      cb(
-        null,
-        "uploads/"
-      );
+    cb(null, "uploads/");
 
-    },
+  },
 
-    filename: (
-      req,
-      file,
-      cb
-    ) => {
+  filename: (req, file, cb) => {
 
-      cb(
+    cb(
 
-        null,
+      null,
 
-        Date.now()
-        +
-        path.extname(
-          file.originalname
-        )
+      Date.now() +
+      path.extname(file.originalname)
 
-      );
+    );
 
-    }
+  }
 
-  });
+});
 
-const upload =
-  multer({
-    storage
-  });
+const upload = multer({
+  storage
+});
 
 /* =========================
    GET ALL ORDERS
@@ -95,50 +67,44 @@ app.get(
 
     try {
 
-      const result =
-        await pool.query(
+      const result = await pool.query(
 
-          `
-          SELECT
+        `
+        SELECT
 
-            orders.id,
-            orders.invoice,
-            orders.customer,
-            orders.address,
-            orders.status,
+          o.id,
+          o.invoice,
+          o.customer,
+          o.address,
+          o.status,
 
-            (
-              SELECT image_url
+          (
+            SELECT image_url
 
-              FROM public.delivery_photos
+            FROM public.delivery_photos dp
 
-              WHERE delivery_photos.order_id = orders.id
+            WHERE dp.order_id = o.id
 
-              ORDER BY delivery_photos.id DESC
+            ORDER BY dp.id DESC
 
-              LIMIT 1
-            ) AS photo
+            LIMIT 1
+          ) AS photo
 
-          FROM public.orders orders
+        FROM public.orders AS o
 
-          ORDER BY orders.id ASC
-          `
+        ORDER BY o.id ASC
+        `
 
-        );
-
-      res.json(
-        result.rows
       );
+
+      res.json(result.rows);
 
     } catch (error) {
 
       console.log(error);
 
       res.status(500).json({
-
-        message:
-          "Server error"
-
+        message: "Server error"
       });
 
     }
@@ -167,27 +133,27 @@ app.get(
           `
           SELECT
 
-            orders.id,
-            orders.invoice,
-            orders.customer,
-            orders.address,
-            orders.status,
+            o.id,
+            o.invoice,
+            o.customer,
+            o.address,
+            o.status,
 
             (
               SELECT image_url
 
-             FROM public.delivery_photos 
+              FROM public.delivery_photos dp
 
-              WHERE delivery_photos.order_id = orders.id
+              WHERE dp.order_id = o.id
 
-              ORDER BY delivery_photos.id DESC
+              ORDER BY dp.id DESC
 
               LIMIT 1
             ) AS photo
 
-          FROM public.orders orders
+          FROM public.orders AS o
 
-          WHERE orders.invoice = $1
+          WHERE o.invoice = $1
           `,
 
           [invoice]
@@ -326,20 +292,19 @@ app.post(
         req.params.id;
 
       const imageUrl =
-
         `/uploads/${req.file.filename}`;
 
       await pool.query(
 
         `
-        INSERT INTO public.delivery_photos(
+        INSERT INTO public.delivery_photos (
 
           order_id,
           image_url
 
         )
 
-        VALUES($1,$2)
+        VALUES ($1, $2)
         `,
 
         [
@@ -394,7 +359,7 @@ app.post(
           `
           SELECT *
 
-          FROM users
+          FROM public.users
 
           WHERE email = $1
           `,
@@ -493,9 +458,7 @@ const PORT =
 app.listen(PORT, () => {
 
   console.log(
-
     `API running on port ${PORT}`
-
   );
 
 });
