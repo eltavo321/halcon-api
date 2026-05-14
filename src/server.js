@@ -90,7 +90,7 @@ app.get(
             LIMIT 1
           ) AS photo
 
-        FROM public.orders AS o
+        FROM orders o
 
         ORDER BY o.id ASC
         `
@@ -151,7 +151,7 @@ app.get(
               LIMIT 1
             ) AS photo
 
-          FROM public.orders AS o
+          FROM orders o
 
           WHERE o.invoice = $1
           `,
@@ -220,7 +220,7 @@ app.put(
         await pool.query(
 
           `
-          UPDATE public.orders
+          UPDATE orders
 
           SET status = $1
 
@@ -297,7 +297,7 @@ app.post(
       await pool.query(
 
         `
-        INSERT INTO public.delivery_photos (
+        INSERT INTO delivery_photos (
 
           order_id,
           image_url
@@ -359,7 +359,7 @@ app.post(
           `
           SELECT *
 
-          FROM public.users
+          FROM users
 
           WHERE email = $1
           `,
