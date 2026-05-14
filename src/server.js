@@ -110,7 +110,7 @@ app.get(
             (
               SELECT image_url
 
-              FROM delivery_photos
+              FROM public.delivery_photos
 
               WHERE delivery_photos.order_id = orders.id
 
@@ -119,7 +119,7 @@ app.get(
               LIMIT 1
             ) AS photo
 
-          FROM orders
+          FROM public.orders
 
           ORDER BY orders.id ASC
           `
@@ -176,7 +176,7 @@ app.get(
             (
               SELECT image_url
 
-              FROM delivery_photos
+             FROM public.delivery_photos 
 
               WHERE delivery_photos.order_id = orders.id
 
@@ -185,7 +185,7 @@ app.get(
               LIMIT 1
             ) AS photo
 
-          FROM orders
+          FROM public.orders
 
           WHERE orders.invoice = $1
           `,
@@ -254,7 +254,7 @@ app.put(
         await pool.query(
 
           `
-          UPDATE orders
+          UPDATE public.orders
 
           SET status = $1
 
@@ -332,7 +332,7 @@ app.post(
       await pool.query(
 
         `
-        INSERT INTO delivery_photos(
+        INSERT INTO public.delivery_photos(
 
           order_id,
           image_url
