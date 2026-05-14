@@ -119,7 +119,7 @@ app.get(
               LIMIT 1
             ) AS photo
 
-          FROM public.orders
+          FROM public.orders orders
 
           ORDER BY orders.id ASC
           `
