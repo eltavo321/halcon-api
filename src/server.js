@@ -185,7 +185,7 @@ app.get(
               LIMIT 1
             ) AS photo
 
-          FROM public.orders
+          FROM public.orders orders
 
           WHERE orders.invoice = $1
           `,
